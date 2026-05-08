@@ -13,6 +13,8 @@
     <title>K-Office Survival</title>
     <!-- html2canvas library for capturing the result screen -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Google Fonts for Arabic support -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --neon-green: #00ff41;
@@ -21,6 +23,7 @@
             --dark-bg: #050505;
             --warning-red: #ff3e3e;
             --terminal-font: 'Courier New', Courier, monospace;
+            --arabic-font: 'Noto Sans Arabic', sans-serif;
         }
 
         html, body {
@@ -60,6 +63,14 @@
             flex-direction: column;
             transform-origin: center center;
             flex-shrink: 0;
+        }
+
+        .rtl {
+            direction: rtl;
+            font-family: var(--arabic-font) !important;
+        }
+        .rtl h1, .rtl h2, .rtl h3, .rtl .q-number, .rtl .glitch-btn, .rtl .intro-btn-cyber .main-text {
+            font-family: var(--arabic-font) !important;
         }
 
         .hidden { display: none !important; }
@@ -104,6 +115,7 @@
         }
         .img-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
         .img-tag { position: absolute; bottom: 5px; right: 8px; font-size: 0.6rem; color: var(--neon-green); background: rgba(0,0,0,0.7); padding: 2px 5px; font-family: var(--terminal-font); }
+        .rtl .img-tag { right: auto; left: 8px; }
 
         .progress-container {
             width: 100%; height: 30px; background: rgba(255,255,255,0.05);
@@ -129,6 +141,7 @@
         .bar-segment.active { background: var(--neon-green); box-shadow: 0 0 5px var(--neon-green); }
 
         .timer-display { display: flex; align-items: center; justify-content: flex-end; gap: 8px; color: var(--neon-green); transition: color 0.3s ease; }
+        .rtl .timer-display { justify-content: flex-start; }
         .timer-display.urgent { color: var(--warning-red); animation: pulse-red 0.5s infinite alternate; }
 
         .timer-icon { font-size: 1.2rem; }
@@ -137,6 +150,7 @@
         .mission-box { border: 1px solid rgba(0, 255, 65, 0.3); padding: 15px; margin: 15px 0; background: rgba(0, 255, 65, 0.05); font-size: 0.9rem; line-height: 1.6; color: #eee; font-family: var(--terminal-font); }
         .point-box { border: 1px solid rgba(0, 210, 255, 0.5); padding: 15px; margin: 15px 0; background: rgba(0, 210, 255, 0.05); font-size: 0.9rem; line-height: 1.6; color: #fff; font-family: var(--terminal-font); }
         .analysis-box { color: #00d2ff; font-family: var(--terminal-font); font-size: 0.99rem; margin-bottom: 15px; border-left: 2px solid #00d2ff; padding-left: 10px; line-height: 1.4; }
+        .rtl .analysis-box { border-left: none; border-right: 2px solid #00d2ff; padding-left: 0; padding-right: 10px; }
 
         #options { display: flex; flex-wrap: nowrap; gap: 15px; margin-top: 10px; width: 100%; }
 
@@ -181,7 +195,6 @@
         .score-display { font-size: 4.5rem; font-weight: 900; margin: 10px 0; color: var(--neon-green); text-shadow: 0 0 20px var(--neon-green); white-space: pre; font-family: var(--terminal-font); }
         #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--neon-green); color: black; padding: 10px 20px; font-weight: bold; font-size: 0.8rem; border-radius: 20px; z-index: 3000; font-family: var(--terminal-font); }
         
-        /* 캡처를 위한 컨테이너 스타일 */
         #capture-area { 
             background: #050505; 
             padding: 20px; 
@@ -200,7 +213,35 @@
         }
         #capture-modal img { max-width: 100%; max-height: 60vh; border: 2px solid var(--neon-green); box-shadow: 0 0 20px var(--neon-green); display: block; margin-bottom: 15px; }
 
-        /* --- Intro Page --- */
+        .lang-switch {
+            position: absolute;
+            top: 50px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        .lang-btn {
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 5px 12px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+            transition: 0.3s;
+            border-radius: 4px;
+            font-family: var(--terminal-font);
+        }
+        .lang-btn.active {
+            background: var(--neon-green);
+            color: black;
+            box-shadow: 0 0 10px var(--neon-green);
+        }
+        .lang-btn:hover {
+            box-shadow: 0 0 15px var(--neon-green);
+        }
+
         #intro {
             display: flex; flex-direction: column; justify-content: space-between; align-items: center;
             text-align: center; height: 100%; width: 100%; position: relative;
@@ -223,6 +264,13 @@
             animation: glitch-title 3s infinite;
             white-space: nowrap; 
         }
+        .rtl .typing-container-cyber { 
+            font-size: 2.8rem; 
+            letter-spacing: 0; 
+            white-space: normal; 
+            word-break: keep-all;
+            padding: 0 10px;
+        }
 
         .survival-rate-mid { 
             font-size: 1.2rem; color: var(--neon-pink); font-weight: 800; 
@@ -231,6 +279,11 @@
             background: rgba(255, 0, 255, 0.05); box-shadow: 0 0 15px rgba(255, 0, 255, 0.2); 
             animation: flicker 2s infinite; 
             white-space: nowrap;
+        }
+        .rtl .survival-rate-mid {
+            white-space: normal;
+            font-size: 1.1rem;
+            line-height: 1.4;
         }
 
         .intro-btn-cyber { 
@@ -273,32 +326,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
 <div id="app">
-    <!-- Intro Screen -->
     <div id="intro">
+        <div class="lang-switch">
+            <button class="lang-btn active" onclick="switchLang('en')">EN</button>
+            <button class="lang-btn" onclick="switchLang('ar')">مَصْرِي</button>
+        </div>
         <div class="intro-bg-grid"></div>
         <div class="top-banner-cyber" style="position: absolute; top: 0; left: 0; width: 100%; background: rgba(0, 0, 0, 0.6); border-bottom: 1px solid var(--neon-green); font-size: 0.7rem; color: var(--neon-green); padding: 8px; text-transform: uppercase; overflow: hidden; white-space: nowrap; z-index: 10;">
-            <div style="display: inline-block; animation: scroll-cyber 12s linear infinite;">👀 No nunchi, no lunch. Survive K-office or get left out. • 👀 No nunchi, no lunch. Survive K-office or get left out. • </div>
+            <div id="scrolling-banner" style="display: inline-block; animation: scroll-cyber 12s linear infinite;">👀 No nunchi, no lunch. Survive K-office or get left out. • 👀 No nunchi, no lunch. Survive K-office or get left out. • </div>
         </div>
         <style>@keyframes scroll-cyber { from { transform: translateX(100%); } to { transform: translateX(-100%); } }</style>
-        
         <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%;">
-            <div style="font-size: 1.3rem; color: var(--neon-blue); letter-spacing: 10px; margin-bottom: 25px; font-weight: bold;">PROTOCOL ACTIVE</div>
+            <div id="protocol-active" style="font-size: 1.3rem; color: var(--neon-blue); letter-spacing: 10px; margin-bottom: 25px; font-weight: bold;">PROTOCOL ACTIVE</div>
             <div class="typing-container-cyber" id="main-copy">K-SURVIVAL</div>
             <div style="height: 4px; width: 100px; background: var(--neon-pink); margin: 0 auto; box-shadow: 0 0 20px var(--neon-pink);"></div>
-            <div class="survival-rate-mid">k-office survival rate:<br> less than 10%!</div>
+            <div class="survival-rate-mid" id="intro-survival-rate">k-office survival rate:<br> less than 10%!</div>
             <div style="height: 4px; width: 100px; background: var(--neon-pink); margin: 0 auto; box-shadow: 0 0 20px var(--neon-pink);"></div>
             <button class="intro-btn-cyber" onclick="startQuiz()" style="margin-top: 40px;">
-                <span class="main-text">[ CHECK MY SURVIVAL RANK ]</span>
+                <span class="main-text" id="intro-btn-text"> CHECK MY SURVIVAL RANK </span>
             </button>
         </div>
-        
         <div style="width: 100%; display: flex; flex-direction: column; align-items: center; z-index: 2; margin-bottom: 20px;">
-            <div class="visitor-toast-cyber">👽 <span id="visitor-count">12,325</span> ALIENS ESCAPING...</div>
+            <div class="visitor-toast-cyber">👽 <span id="visitor-count">12,325</span> <span id="intro-visitor-text">ALIENS ESCAPING...</span></div>
             <div style="font-size: 0.6rem; color: #444; letter-spacing: 2px; margin-top: 15px;">VER: 2.0.0-CYBER</div>
         </div>
     </div>
 
-    <!-- Quiz Screen -->
     <div id="quiz" class="hidden">
         <span class="q-number" id="q-num-text">-</span>
         <div class="progress-container">
@@ -313,7 +366,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="analysis-box" id="q-analysis">-</div>
         <div class="status-grid">
             <div class="stress-meter">
-                <span class="stress-label">STRESS LEVEL</span>
+                <span id="stress-label" class="stress-label">STRESS LEVEL</span>
                 <div class="stress-bars" id="stress-bars"></div>
             </div>
             <div id="timer-container" class="timer-display">
@@ -329,126 +382,247 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
 
-    <!-- Result Screen -->
     <div id="result" class="hidden" style="padding: 20px; height: 100%; overflow-y: auto;">
         <div id="capture-area">
             <div class="img-box">
-                <img id="res-img" src="survival_1.jpg" alt="Final Analysis" onerror="this.src='https://via.placeholder.com/500x200/002200/00ff41?text=FINAL_ANALYSIS'">
-                <div class="img-tag">FINAL_ANALYSIS_COMPLETE</div>
+                <img id="res-img" src="" alt="Final Analysis" onerror="this.src='https://via.placeholder.com/500x200/002200/00ff41?text=FINAL_ANALYSIS'">
+                <div class="img-tag" id="final-analysis-tag">FINAL_ANALYSIS_COMPLETE</div>
             </div>
-            <h2 style="color: #fff; margin-bottom: 5px; font-size: 1.2rem;">Sync Rate Analysis Complete</h2>
+            <h2 style="color: #fff; margin-bottom: 5px; font-size: 1.2rem;" id="res-sync-title">Sync Rate Analysis Complete</h2>
             <div class="score-display" id="final-score" translate="no">0 / 5</div>
             <div id="result-rank" style="font-size: 1.1rem; font-weight: bold; margin-bottom: 5px; color: #00d2ff; line-height: 1.2;"></div>
             <div class="mission-box" id="result-msg" style="font-size: 0.9rem; border-color: var(--neon-green); font-style: italic; color: #fff;"></div>
             <div id="culture-rank-label" style="font-size: 1.1rem; font-weight: bold; margin-bottom: 5px; color: #00d2ff; line-height: 1.2;"></div>
             <div class="point-box" id="culture-point-msg" style="font-size: 0.9rem; font-style: italic;"></div>
         </div>
-        <button class="glitch-btn save-btn" onclick="saveAsImage()">SAVE RESULT IMAGE</button>
-        <button class="glitch-btn share-btn" id="share-btn" onclick="copyResult()">SHARE TO FRIENDS</button>
-        <button class="glitch-btn" onclick="rebootGame()">REBOOT SYSTEM</button>
+        <button id="btn-save-img" class="glitch-btn save-btn" onclick="saveAsImage()">SAVE RESULT IMAGE</button>
+        <button id="btn-share" class="glitch-btn share-btn" onclick="copyResult()">SHARE TO FRIENDS</button>
+        <button id="btn-reboot" class="glitch-btn" onclick="rebootGame()">REBOOT SYSTEM</button>
     </div>
 </div>
 
 <div id="capture-modal" class="hidden">
-    <div class="modal-header">Analysis Result Ready</div>
+    <div class="modal-header" id="modal-header">Analysis Result Ready</div>
     <img id="modal-img" src="" alt="Final Analysis Result">
-    <p>Mobile: Long press to save image.<br>PC: Use the 'Download' button below.</p>
+    <p id="modal-desc">Mobile: Long press to save image.<br>PC: Use the 'Download' button below.</p>
     <div style="display: flex; gap: 10px; width: 100%; max-width: 320px;">
         <button id="download-trigger" class="glitch-btn" style="flex: 1; border-color: #00d2ff; color: #00d2ff; margin: 0; padding: 12px; font-size: 0.9rem;">Download</button>
-        <button class="glitch-btn" style="flex: 1; margin: 0; padding: 12px; font-size: 0.9rem;" onclick="closeModal()">Close</button>
+        <button class="glitch-btn" id="btn-modal-close" style="flex: 1; margin: 0; padding: 12px; font-size: 0.9rem;" onclick="closeModal()">Close</button>
     </div>
 </div>
 
 <div id="toast" class="hidden">Link Copied!</div>
 
 <script>
-    function applyScaling() {
-        const app = document.getElementById('app');
-        const winW = window.innerWidth;
-        const winH = window.innerHeight;
-        const baseW = 500;
-        const baseH = 900;
-        const scaleW = winW / baseW;
-        const scaleH = winH / baseH;
-        const scale = Math.min(scaleW, scaleH);
-        app.style.transform = `scale(${scale})`;
-    }
-
-    window.addEventListener('resize', applyScaling);
-    window.addEventListener('load', applyScaling);
-    applyScaling();
-
-    const questions = [
-        {
-            num: "Q1. [The Morning Commute] <br> Hell's Compression Server",
-            title: "You entered the subway transfer hall. How to behave like a native?",
-            analysis: "Natives compress their bodies into small iron boxes every morning...",
-            img: "survival_2.jpg",
-            tag: "LOC: SUBWAY_STATION",
-            options: [
-                { text: "Speed-walk toward <br> 'FAST TRANSFER CAR' immediately.", score: 1, feedback: "<b>SYNCED!</b><br>Perfect. A true native keeps their muscles tense for maximum speed." },
-                { text: "Walk leisurely, thinking <br> \"I'll take the next train.\"", score: 0, feedback: "<b>ERROR!</b><br>Disguise failed! A relaxed attitude conflicts with the natives' 'commuting rage'." }
-            ]
+    let currentLang = 'en';
+    const translations = {
+        en: {
+            main_title: "K-SURVIVAL",
+            scrolling: "👀 No nunchi, no lunch. Survive K-office or get left out. • 👀 No nunchi, no lunch. Survive K-office or get left out. • ",
+            protocol: "PROTOCOL ACTIVE",
+            survival_rate: "k-office survival rate:<br> less than 10%!",
+            intro_btn: " CHECK MY SURVIVAL RANK ",
+            visitor_text: "ALIENS ESCAPING...",
+            stress_label: "STRESS LEVEL",
+            next_protocol: "NEXT PROTOCOL",
+            reveal_results: "REVEAL RESULTS",
+            synced: "SYNCED",
+            failed: "FAILED",
+            sync_rate_title: "Sync Rate Analysis Complete",
+            final_tag: "FINAL_ANALYSIS_COMPLETE",
+            btn_save: "SAVE RESULT IMAGE",
+            btn_share: "SHARE TO FRIENDS",
+            btn_reboot: "REBOOT SYSTEM",
+            modal_header: "Analysis Result Ready",
+            modal_desc: "Mobile: Long press to save image.<br>PC: Use the 'Download' button below.",
+            modal_close: "Close",
+            toast_copy: "Link Copied!",
+            toast_gen: "GENERATING..."
         },
-        {
-            num: "Q2. [The Elevator] <br> 0.1s Wit Game",
-            title: "Encountered a superior in the elevator! How to survive the space?",
-            analysis: "One minute in a closed space with a superior feels like eternity...",
-            img: "survival_3.jpg",
-            tag: "LOC: ELEVATOR",
-            options: [
-                { text: "Wait calmly until <br> the door closes by itself.", score: 0, feedback: "<b>WARNING!</b><br>Awkwardness detected! The superior entity's pupils shake in the silence." },
-                { text: "Rapidly press the <br> 'Close' button multiple times.", score: 1, feedback: "<b>SYNCED!</b><br>Your will to leave this space 0.1s faster is perfectly synchronized." }
-            ]
-        },
-        {
-            num: "Q3. [Lunch Break] <br> Kiosk Ultra-fast Rendering",
-            title: "In front of the kiosk, you feel the laser beam from behind. Choice?",
-            analysis: "Cooking speed here is near light-speed. Hesitating is fatal...",
-            img: "survival_4.jpg",
-            tag: "LOC: K-RESTAURANT",
-            options: [
-                { text: "Pay within 10s! <br> Open the secret drawer <br> and set utensils immediately.", score: 1, feedback: "<b>SYNCED!</b><br>Ordering speed and utensil setting are core survival skills here." },
-                { text: "Read the menu <br> for 3 mins <br> and wait for staff <br> to bring utensils.", score: 0, feedback: "<b>DANGER!</b><br>Laser fire! Natives have a custom of setting utensils by themselves." }
-            ]
-        },
-        {
-            num: "Q4. [The Cafe] <br> Intangible Shield of Trust",
-            title: "Strange trust system. How do you protect your expensive laptop?",
-            analysis: "No looting occurs even if expensive gear is left unattended...",
-            img: "survival_5.jpg",
-            tag: "LOC: K-CAFE",
-            options: [
-                { text: "Search for a seat with your bag, <br> fearing theft.", score: 0, feedback: "<b>ERROR!</b><br>Excessive suspicion marks you as an outsider. Trust the shield." },
-                { text: "Offer your laptop as a 'sacrifice' <br> to claim the area.", score: 1, feedback: "<b>SYNCED!</b><br>Perfect. A laptop is the most powerful means of marking territory." }
-            ]
-        },
-        {
-            num: "Q5. [Company Chicken Night] <br> K-Chicken Alchemy",
-            title: "One last piece of chicken remains on the plate. What to do?",
-            analysis: "He who holds the hits power...",
-            img: "survival6.png",
-            tag: "LOC: AFTER-WORK GATHERING",
-            options: [
-                { text: "Ask \"Aren't you eating this?\" <br> three times <br> before eating.", score: 1, feedback: "<b>SYNCED!</b><br>Consumption after 'triple rejection' is socially approved." },
-                { text: "Shout \"Lucky!\" <br> and eat the meat <br> at light speed.", score: 0, feedback: "<b>FAILURE!</b><br>'Nunchi' algorithm violated. Risk of exclusion from the group." }
-            ]
+        ar: {
+            main_title: "تحدي البقاء: كورية",
+            scrolling: "👀 لا 'نونتشي' لا غداء. ابقَ على قيد الحياة في المكتب الكوري أو سيتم استبعادك. • ",
+            protocol: "البروتوكول نشط الآن",
+            survival_rate: "معدل النجاة في المكتب الكوري:<br> أقل من 10%!",
+            intro_btn: " ابدأ اختبار البقاء الآن ",
+            visitor_text: "كائنات فضائية تحاول الهرب...",
+            stress_label: "مستوى الضغط العصبي",
+            next_protocol: "البروتوكول التالي",
+            reveal_results: "كشف النتائج النهائية",
+            synced: "تمت المزامنة بنجاح",
+            failed: "فشل في المزامنة",
+            sync_rate_title: "اكتمل تحليل معدل المزامنة",
+            final_tag: "اكتمل_التحليل_النهائي",
+            btn_save: "حفظ صورة النتيجة",
+            btn_share: "مشاركة مع الأصدقاء",
+            btn_reboot: "إعادة تشغيل النظام",
+            modal_header: "نتيجة التحليل جاهزة",
+            modal_desc: "للموبايل: اضغط مطولاً لحفظ الصورة.<br>للكمبيوتر: استخدم زر التحميل أدناه.",
+            modal_close: "إغلاق",
+            toast_copy: "تم نسخ الرابط بنجاح!",
+            toast_gen: "جاري المعالجة..."
         }
-    ];
+    };
 
+    const questions_data = {
+        en: [
+            {
+                num: "Q1. [The Morning Commute] <br> Hell's Compression Server",
+                title: "You entered the subway transfer hall. How to behave like a native?",
+                analysis: "Natives compress their bodies into small iron boxes every morning...",
+                tag: "LOC: SUBWAY_STATION",
+                options: [
+                    { text: "Speed-walk toward <br> 'FAST TRANSFER CAR' immediately.", score: 1, feedback: "<b>SYNCED!</b><br>Perfect. A true native keeps their muscles tense for maximum speed." },
+                    { text: "Walk leisurely, thinking <br> \"I'll take the next train.\"", score: 0, feedback: "<b>ERROR!</b><br>Disguise failed! A relaxed attitude conflicts with the natives' 'commuting rage'." }
+                ]
+            },
+            {
+                num: "Q2. [The Elevator] <br> 0.1s Wit Game",
+                title: "Encountered a superior in the elevator! How to survive the space?",
+                analysis: "One minute in a closed space with a superior feels like eternity...",
+                tag: "LOC: ELEVATOR",
+                options: [
+                    { text: "Wait calmly until <br> the door closes by itself.", score: 0, feedback: "<b>WARNING!</b><br>Awkwardness detected! The superior entity's pupils shake in the silence." },
+                    { text: "Rapidly press the <br> 'Close' button multiple times.", score: 1, feedback: "<b>SYNCED!</b><br>Your will to leave this space 0.1s faster is perfectly synchronized." }
+                ]
+            },
+            {
+                num: "Q3. [Lunch Break] <br> Kiosk Ultra-fast Rendering",
+                title: "In front of the kiosk, you feel the laser beam from behind. Choice?",
+                analysis: "Cooking speed here is near light-speed. Hesitating is fatal...",
+                tag: "LOC: K-RESTAURANT",
+                options: [
+                    { text: "Pay within 10s! <br> Open the secret drawer <br> and set utensils immediately.", score: 1, feedback: "<b>SYNCED!</b><br>Ordering speed and utensil setting are core survival skills here." },
+                    { text: "Read the menu <br> for 3 mins <br> and wait for staff <br> to bring utensils.", score: 0, feedback: "<b>DANGER!</b><br>Laser fire! Natives have a custom of setting utensils by themselves." }
+                ]
+            },
+            {
+                num: "Q4. [The Cafe] <br> Intangible Shield of Trust",
+                title: "Strange trust system. How do you protect your expensive laptop?",
+                analysis: "No looting occurs even if expensive gear is left unattended...",
+                tag: "LOC: K-CAFE",
+                options: [
+                    { text: "Search for a seat with your bag, <br> fearing theft.", score: 0, feedback: "<b>ERROR!</b><br>Excessive suspicion marks you as an outsider. Trust the shield." },
+                    { text: "Offer your laptop as a 'sacrifice' <br> to claim the area.", score: 1, feedback: "<b>SYNCED!</b><br>Perfect. A laptop is the most powerful means of marking territory." }
+                ]
+            },
+            {
+                num: "Q5. [Company Chicken Night] <br> K-Chicken Alchemy",
+                title: "One last piece of chicken remains on the plate. What to do?",
+                analysis: "He who holds the hits power...",
+                tag: "LOC: AFTER-WORK GATHERING",
+                options: [
+                    { text: "Ask \"Aren't you eating this?\" <br> three times <br> before eating.", score: 1, feedback: "<b>SYNCED!</b><br>Consumption after 'triple rejection' is socially approved." },
+                    { text: "Shout \"Lucky!\" <br> and eat the meat <br> at light speed.", score: 0, feedback: "<b>FAILURE!</b><br>'Nunchi' algorithm violated. Risk of exclusion from the group." }
+                ]
+            }
+        ],
+        ar: [
+            {
+                num: "س1. [الانتقال الصباحي] <br> زحمة المترو الرهيبة",
+                title: "دخلت محطة المترو في ساعة الذروة. إزاي تتصرف كأنك كوري أصيل؟",
+                analysis: "الكوريين بيضغطوا نفسهم في صناديق حديدية كل يوم الصبح...",
+                tag: "الموقع: محطة المترو",
+                options: [
+                    { text: "تجري فوراً ناحية <br> عربية 'التبديل السريع'.", score: 1, feedback: "<b>تمت المزامنة!</b><br>مثالي. المواطن الحقيقي لازم يكون مشدود وبأقصى سرعة." },
+                    { text: "تمشي براحتك وتقول <br> 'مش مهم، هاخد القطر اللي جاي'.", score: 0, feedback: "<b>خطأ في النظام!</b><br>انكشفت! الهدوء ده بيتعارض مع 'جنون المواصلات' عند الكوريين." }
+                ]
+            },
+            {
+                num: "س2. [الأسانسير] <br> صراع الـ 0.1 ثانية",
+                title: "قابلت مديرك فجأة في الأسانسير! إزاي هتعدي الموقف ده؟",
+                analysis: "دقيقة واحدة محبوس مع مديرك كأنها سنة ضوئية...",
+                tag: "الموقع: الأسانسير",
+                options: [
+                    { text: "تستنى بهدوء <br> لحد ما الباب يقفل لوحده.", score: 0, feedback: "<b>تحذير!</b><br>إحراج قاتل! عيون المدير بدأت تترعش من السكوت المريب." },
+                    { text: "تدوس على زرار <br> 'القفـل' مية مرة ورا بعض!", score: 1, feedback: "<b>تمت المزامنة!</b><br>رغبتك في الهروب أسرع بـ 0.1 ثانية متطابقة تماماً مع ثقافة البلد." }
+                ]
+            },
+            {
+                num: "س3. [استراحة الغداء] <br> سرعة طلب الأكل الخارقة",
+                title: "واقف قدام مكنة الطلبات وحاسس بنظرات اللي وراك كأنها ليزر. هتعمل إيه؟",
+                analysis: "سرعة الطبخ هنا قريبة من سرعة الضوء. التردد يعني الموت...",
+                tag: "الموقع: مطعم كوري",
+                options: [
+                    { text: "تدفع في أقل من 10 ثواني! <br> وتجهز المعالق والشوك فوراً.", score: 1, feedback: "<b>تمت المزامنة!</b><br>سرعة الطلب وتجهيز التربيزة هي مهارات بقاء أساسية هنا." },
+                    { text: "تقعد تقرا المنيو <br> لمدة 3 دقائق <br> وتستنى الجرسون يجيبلك الشوك.", score: 0, feedback: "<b>خطر!</b><br>ليزر من كل حتة! الكوريين بيجهزوا حاجتهم بنفسهم وبسرعة." }
+                ]
+            },
+            {
+                num: "س4. [الكافيه] <br> درع الثقة السحري",
+                title: "نظام ثقة غريب. إزاي هتحمي اللابتوب الغالي بتاعك؟",
+                analysis: "مفيش حد بيسرق حاجة حتى لو سبت أغلى الأجهزة لوحدها...",
+                tag: "الموقع: كافيه كوري",
+                options: [
+                    { text: "تفضل تدور على كرسي <br> وأنت شايل شنطتك، خايف تتسرق.", score: 0, feedback: "<b>خطأ!</b><br>الشك الزائد ده بيخليك غريب. ثق في الدرع غير المرئي." },
+                    { text: "تسيب اللابتوب كـ 'قربان' <br> عشان تحجز المكان وتمشي.", score: 1, feedback: "<b>تمت المزامنة!</b><br>مثالي. اللابتوب هو أقوى وسيلة لحجز منطقتك في كوريا." }
+                ]
+            },
+            {
+                num: "س5. [عزومة الفراخ] <br> كيمياء الفراخ الكورية",
+                title: "بقت آخر حتة فرخة في الطبق. هتعمل إيه؟",
+                analysis: "اللي بياكل آخر حتة هو اللي بيمتلك القوة...",
+                tag: "الموقع: خروجة بعد الشغل",
+                options: [
+                    { text: "تسأل 'مش هتاكلوا دي؟' <br> تلات مرات <br> قبل ما تاكلها.", score: 1, feedback: "<b>تمت المزامنة!</b><br>الأكل بعد 'الرفض التلاتي' هو الطريقة المقبولة اجتماعياً هنا." },
+                    { text: "تصرخ 'يا حظي!' <br> وتاكلها <br> بسرعة الضوء.", score: 0, feedback: "<b>فشل!</b><br>انتهكت خوارزمية 'النونتشي'. خطر الاستبعاد من الشلة." }
+                ]
+            }
+        ]
+    };
+
+    let questions = questions_data.en;
     let currentIdx = 0;
     let score = 0;
     let timeLeft = 7;
     let timerInterval = null;
 
+    function switchLang(lang) {
+        currentLang = lang;
+        questions = questions_data[lang];
+        const app = document.getElementById('app');
+        const btns = document.querySelectorAll('.lang-btn');
+        if (lang === 'ar') {
+            app.classList.add('rtl');
+            btns[0].classList.remove('active'); btns[1].classList.add('active');
+        } else {
+            app.classList.remove('rtl');
+            btns[0].classList.add('active'); btns[1].classList.remove('active');
+        }
+        const t = translations[lang];
+        document.getElementById('main-copy').innerText = t.main_title;
+        document.getElementById('scrolling-banner').innerText = t.scrolling;
+        document.getElementById('protocol-active').innerText = t.protocol;
+        document.getElementById('intro-survival-rate').innerHTML = t.survival_rate;
+        document.getElementById('intro-btn-text').innerText = t.intro_btn;
+        document.getElementById('intro-visitor-text').innerText = t.visitor_text;
+        document.getElementById('stress-label').innerText = t.stress_label;
+        document.getElementById('res-sync-title').innerText = t.sync_rate_title;
+        document.getElementById('final-analysis-tag').innerText = t.final_tag;
+        document.getElementById('btn-save-img').innerText = t.btn_save;
+        document.querySelector('.share-btn').innerText = t.btn_share;
+        document.getElementById('btn-reboot').innerText = t.btn_reboot;
+        document.getElementById('modal-header').innerText = t.modal_header;
+        document.getElementById('modal-desc').innerHTML = t.modal_desc;
+        document.getElementById('btn-modal-close').innerText = t.modal_close;
+    }
+
+    function applyScaling() {
+        const app = document.getElementById('app');
+        const scale = Math.min(window.innerWidth / 500, window.innerHeight / 900);
+        app.style.transform = `scale(${scale})`;
+    }
+    window.addEventListener('resize', applyScaling);
+    window.addEventListener('load', applyScaling);
+    applyScaling();
+
     document.addEventListener("DOMContentLoaded", () => {
         const countEl = document.getElementById('visitor-count');
-        const storageKey = 'k_survival_visitor_count';
         const baseCount = 12325;
-        let savedCount = localStorage.getItem(storageKey);
-        if (!savedCount) { savedCount = baseCount; } else { savedCount = parseInt(savedCount) + 1; }
-        localStorage.setItem(storageKey, savedCount);
-        if (countEl) { countEl.innerText = savedCount.toLocaleString(); }
+        let savedCount = localStorage.getItem('k_survival_visitor_count');
+        if (!savedCount) savedCount = baseCount; else savedCount = parseInt(savedCount) + 1;
+        localStorage.setItem('k_survival_visitor_count', savedCount);
+        if (countEl) countEl.innerText = savedCount.toLocaleString();
     });
 
     function startQuiz() {
@@ -461,8 +635,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const q = questions[currentIdx];
         document.getElementById('q-num-text').innerHTML = q.num;
         document.getElementById('q-title').innerHTML = q.title;
-        document.getElementById('q-analysis').innerHTML = `Analysis: "${q.analysis}"`;
-        document.getElementById('q-img').src = q.img;
+        document.getElementById('q-analysis').innerHTML = (currentLang === 'ar' ? 'تحليل: ' : 'Analysis: ') + `"${q.analysis}"`;
+        document.getElementById('q-img').src = currentIdx === 4 ? "survival6.png" : `survival_${currentIdx + 2}.jpg`;
         document.getElementById('q-tag').innerText = q.tag;
         updateStressMeter();
         startTimer();
@@ -471,8 +645,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         q.options.forEach((opt, idx) => {
             const btn = document.createElement('button');
             btn.className = 'btn-opt';
-            const label = idx === 0 ? 'A' : 'B';
-            btn.innerHTML = `<div class="opt-label">${label}</div><div class="opt-content">${opt.text}</div>`;
+            btn.innerHTML = `<div class="opt-label">${idx === 0 ? 'A' : 'B'}</div><div class="opt-content">${opt.text}</div>`;
             btn.onclick = () => selectOption(opt);
             optionsArea.appendChild(btn);
         });
@@ -480,21 +653,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     function startTimer() {
-        clearInterval(timerInterval);
-        timeLeft = 7;
-        updateTimerDisplay();
+        clearInterval(timerInterval); timeLeft = 7; updateTimerDisplay();
         timerInterval = setInterval(() => {
             if (timeLeft > 0) { timeLeft--; updateTimerDisplay(); } 
-            else { clearInterval(timerInterval); document.getElementById('timer-val').innerText = "00s"; document.getElementById('timer-container').classList.add('urgent'); }
+            else { clearInterval(timerInterval); document.getElementById('timer-val').innerText = "00s"; }
         }, 1000);
     }
 
     function updateTimerDisplay() {
         const timerVal = document.getElementById('timer-val');
         const timerContainer = document.getElementById('timer-container');
-        timerVal.innerText = `0${timeLeft}s`;
-        if (timeLeft <= 3) timerContainer.classList.add('urgent');
-        else timerContainer.classList.remove('urgent');
+        timerVal.innerText = (currentLang === 'ar' ? 'ث' : 's') + `0${timeLeft}`;
+        if (timeLeft <= 3) timerContainer.classList.add('urgent'); else timerContainer.classList.remove('urgent');
     }
 
     function updateStressMeter() {
@@ -508,23 +678,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     function updateProgress() {
         const progress = (currentIdx / questions.length) * 100;
         document.getElementById('bar').style.width = progress + '%';
-        document.getElementById('p-icon').style.left = `calc(${progress}% - 5px)`;
+        const pIcon = document.getElementById('p-icon');
+        if (currentLang === 'ar') { pIcon.style.left = 'auto'; pIcon.style.right = `calc(${progress}% - 5px)`; } 
+        else { pIcon.style.right = 'auto'; pIcon.style.left = `calc(${progress}% - 5px)`; }
     }
 
     function selectOption(opt) {
-        clearInterval(timerInterval); 
-        score += opt.score;
+        clearInterval(timerInterval); score += opt.score;
         const feedback = document.getElementById('feedback');
-        const status = document.getElementById('f-status');
-        const desc = document.getElementById('f-desc');
+        const t = translations[currentLang];
         const nextBtn = document.getElementById('next-btn');
-        if (nextBtn) {
-            if (currentIdx < questions.length - 1) { nextBtn.innerText = "NEXT PROTOCOL"; nextBtn.classList.remove('blue-btn'); } 
-            else { nextBtn.innerText = "REVEAL RESULTS"; nextBtn.classList.add('blue-btn'); }
-        }
-        if (opt.score === 1) { status.innerText = "SYNCED"; status.style.color = "var(--neon-green)"; } 
-        else { status.innerText = "FAILED"; status.style.color = "var(--warning-red)"; }
-        desc.innerHTML = opt.feedback;
+        nextBtn.innerText = currentIdx < questions.length - 1 ? t.next_protocol : t.reveal_results;
+        const status = document.getElementById('f-status');
+        if (opt.score === 1) { status.innerText = t.synced; status.style.color = "var(--neon-green)"; } 
+        else { status.innerText = t.failed; status.style.color = "var(--warning-red)"; }
+        document.getElementById('f-desc').innerHTML = opt.feedback;
         feedback.classList.remove('hidden');
     }
 
@@ -534,47 +702,37 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (currentIdx < questions.length) renderQuestion(); else showResult();
     }
 
+    const result_texts = {
+        en: {
+            s: { rank: "[RANK: S] <br> EXILE MISSION COMPLETE — RETURN APPROVED", msg: `"You’ve mastered nunchi, ppalli-ppalli(chop chop), and even teamwork protocols. But … do you really want to go back?"`, cult: "[K-CULTURE POINT] Hangang Ramen", cultMsg: "After work, watching the night view of the Han River, you cook instant ramen in a foil bowl machine. “This planet… is better than I expected.”" },
+            a: { rank: "[RANK: A] <br> DISGUISE SUCCESS — MINOR ANOMALY DETECTED", msg: `"Your speed and nunchi were almost perfect. But there was one moment—your reaction was 0.3 seconds too slow. In Korea, nunchi isn’t something you can just learn."`, cult: "[K-CULTURE POINT] Noryangjin Sashimi", cultMsg: "A live fish, sliced right in front of you. Wrapped quickly with fresh vegetables. In the loud, lively market, you experience real nunchi and jeong." },
+            b: { rank: "[RANK: B] <br> NUNCHI RADAR TRIGGERED — 1 DETECTION", msg: `"You blended in halfway, but locals still noticed something. Here, unspoken rules aren’t learned with your head—you learn them with your body."`, cult: "[K-CULTURE POINT] Jjimjilbang", cultMsg: "A scrubber taps your back twice—no words needed. In that moment, you just understand. With a cold cup of sikhye, that last 0.3 seconds of awkwardness fades away." },
+            c: { rank: "[RANK: C] <br> K-ETIQUETTE RE-TRAINING RECOMMENDED", msg: `"Your disguise has started to crack in several places. But that's okay. Korea hits hardest when you experience it for the first time."`, cult: "[K-CULTURE POINT] 3AM Fried Chicken Delivery", cultMsg: "At 3AM, fresh fried chicken arrives at your door. Unbelievably fast. No explanation needed. And somehow, it feels comforting." },
+            f: { rank: "[RANK: F] <br> EXILE EXTENDED — IMMEDIATE RE-TRAINING REQUIRED", msg: `"Your nunchi, speed, and teamwork all failed. But strangely… this planet pulls you in deeper when you fail."`, cult: "[K-CULTURE POINT] Convenience Store", cultMsg: "A 24-hour convenience store glowing in the night. You grab a random 1+1 snack. Why does it feel so comforting? Why does it make you want to try again?" }
+        },
+        ar: {
+            s: { rank: "[الرتبة: S] <br> اكتملت المهمة بنجاح — أنت كوري أكتر من الكوريين", msg: `"لقد أتقنت 'النونتشي' و'البالي-بالي' وحتى روح الفريق. بصراحة، إحنا شاكين إنك فضائي أصلاً.. أنت بقيت واحد منهم!"`, cult: "[نقطة الثقافة الكورية] راميون على نهر هان", cultMsg: "بعد الشغل، وأنت بتتفرج على النيل الكوري (نهر هان)، بتعمل راميون في مكنة الفويل. اللحظة دي.. هي قمة السعادة." },
+            a: { rank: "[الرتبة: A] <br> نجاح التمويه — تقريباً محدش خد باله", msg: `"سرعتك وذكاءك الاجتماعي كانوا مثاليين. بس في لحظة واحدة.. رد فعلك كان بطيء 0.3 ثانية. في كوريا، السرعة هي كل حاجة."`, cult: "[نقطة الثقافة الكورية] ساشيمي نوريانغجين", cultMsg: "سمكة طازة بتتقطع قدامك في سوق السمك. في وسط الزحمة والدوشة، بتحس بروح كوريا الحقيقية و'الجونغ' (المودة)." },
+            b: { rank: "[الرتبة: B] <br> كشف واحد في رادار 'النونتشي'", msg: `"اندمجت كويس، بس الناس لسه حاسة إن في حاجة غريبة. هنا، القواعد مش بتتعلم بالدماغ.. بتتعلم بالتعامل والتعود."`, cult: "[نقطة الثقافة الكورية] چيم چيل بانغ (السونا)", cultMsg: "لما تروح السونا وتجرب 'السخونية' الكورية، وبعدها كوباية 'سيخيه' ساقعة.. كل التوتر والغرابة هيختفوا." },
+            c: { rank: "[الرتبة: C] <br> محتاج تدريب مكثف على الإتيكيت الكوري", msg: `"تمويهك بدأ يتكشف في كذا حتة. بس مش مشكلة، كوريا بتبقى صعبة في الأول على أي حد غريب عنها."`, cult: "[نقطة الثقافة الكورية] دجاج مقلي الساعة 3 الفجر", cultMsg: "في عز الفجر، تطلب دليفري ويوصلك في دقايق وهو سخن ومقرمش. السرعة دي هي اللي هتخليك تحب البلد دي." },
+            f: { rank: "[الرتبة: F] <br> تم تمديد فترة التدريب — محتاج تبدأ من الأول", msg: `"فشلت في كل الاختبارات.. النونتشي والسرعة وروح الفريق. بس غريبة.. البلد دي بتشدك ليها أكتر كل ما تفشل فيها."`, cult: "[نقطة الثقافة الكورية] السوبر ماركت (24 ساعة)", cultMsg: "لما تروح السوبر ماركت بالليل وتشتري حاجة 'واحد + واحد هدية'.. هتحس براحة غريبة وتفكر تجرب الاختبار ده تاني." }
+        }
+    };
+
     function showResult() {
         document.getElementById('quiz').classList.add('hidden');
         document.getElementById('result').classList.remove('hidden');
         document.getElementById('final-score').innerHTML = `<span>${score}</span> <span>/</span> <span>5</span>`;
-        const rank = document.getElementById('result-rank');
-        const msg = document.getElementById('result-msg');
-        const cultureRankLabel = document.getElementById('culture-rank-label');
-        const cultureMsg = document.getElementById('culture-point-msg');
-        const resultImg = document.getElementById('res-img');
-
-        if (score === 5) {
-            resultImg.src = "result_rank_s.jpg";
-            rank.innerHTML = "[RANK: S] <br> EXILE MISSION COMPLETE — RETURN APPROVED";
-            msg.innerHTML = `"You’ve mastered nunchi, ppalli-ppalli(chop chop), and even teamwork protocols.But … do you really want to go back?"`;
-            cultureRankLabel.innerHTML = "[K-CULTURE POINT] Hangang Ramen";
-            cultureMsg.innerHTML = "After work, watching the night view of the Han River,you cook instant ramen in a foil bowl machine.“This planet… is better than I expected.”";
-        } else if (score === 4) {
-            resultImg.src = "result_rank_a.jpg";
-            rank.innerHTML = "[RANK: A] <br> DISGUISE SUCCESS — MINOR ANOMALY DETECTED";
-            msg.innerHTML = `"Your speed and nunchi were almost perfect.But there was one moment—your reaction was 0.3 seconds too slow.In Korea, nunchi isn’t something you can just learn."`;
-            cultureRankLabel.innerHTML = "[K-CULTURE POINT] Noryangjin Sashimi";
-            cultureMsg.innerHTML = "A live fish, sliced right in front of you.Wrapped quickly with fresh vegetables.In the loud, lively market, you experience real nunchi and jeong.";
-        } else if (score === 3) {
-            resultImg.src = "result_rank_b.jpg";
-            rank.innerHTML = "[RANK: B] <br> NUNCHI RADAR TRIGGERED — 1 DETECTION";
-            msg.innerHTML = `"You blended in halfway, but locals still noticed something.Here, unspoken rules aren’t learned with your head—you learn them with your body."`;
-            cultureRankLabel.innerHTML = "[K-CULTURE POINT] Jjimjilbang";
-            cultureMsg.innerHTML = "A scrubber taps your back twice—no words needed.In that moment, you just understand.With a cold cup of sikhye,that last 0.3 seconds of awkwardness fades away.";
-        } else if (score === 2) {
-            resultImg.src = "result_rank_c.jpg";
-            rank.innerHTML = "[RANK: C] <br> K-ETIQUETTE RE-TRAINING RECOMMENDED";
-            msg.innerHTML = `"Your disguise has started to crack in several places.But that's okay. Korea hits hardest when you experience it for the first time."`;
-            cultureRankLabel.innerHTML = "[K-CULTURE POINT] 3AM Fried Chicken Delivery";
-            cultureMsg.innerHTML = "At 3AM, fresh fried chicken arrives at your door.Unbelievably fast. No explanation needed.And somehow, it feels comforting.";
-        } else {
-            resultImg.src = "result_rank_f.jpg";
-            rank.innerHTML = `[RANK: F] <br> EXILE EXTENDED — IMMEDIATE RE-TRAINING REQUIRED`;
-            msg.innerHTML = `"Your nunchi, speed, and teamwork all failed.But strangely…this planet pulls you in deeper when you fail."`;
-            cultureRankLabel.innerHTML = "[K-CULTURE POINT] Convenience Store";
-            cultureMsg.innerHTML = "A 24-hour convenience store glowing in the night.You grab a random 1+1 snack.Why does it feel so comforting?Why does it make you want to try again?";
-        }
+        const res = result_texts[currentLang];
+        let key = 'f';
+        if (score === 5) key = 's'; else if (score === 4) key = 'a'; else if (score === 3) key = 'b'; else if (score === 2) key = 'c';
+        document.getElementById('res-img').src = `result_rank_${key}.jpg`;
+        document.getElementById('result-rank').innerHTML = res[key].rank;
+        document.getElementById('result-msg').innerHTML = res[key].msg;
+        document.getElementById('culture-rank-label').innerHTML = res[key].cult;
+        document.getElementById('culture-point-msg').innerHTML = res[key].cultMsg;
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ 'event': 'SubmitForm', 'score': score, 'lang': currentLang });
     }
 
     function rebootGame() {
@@ -583,123 +741,67 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         document.getElementById('intro').classList.remove('hidden');
         document.getElementById('bar').style.width = '0%';
         document.getElementById('p-icon').style.left = '-10px';
-        document.getElementById('timer-container').classList.remove('urgent');
     }
 
     function copyResult() {
-        const gameUrl = window.location.href; 
+        const gameUrl = "https://ep-1-survival-k-office.vercel.app/"; 
         const currentRankText = document.getElementById('result-rank').innerText;
         let shareBody = "";
-        if (score === 5) shareBody = `🏆 [SURVIVAL COMPLETE] I'm fully patched into K-Worker mode lol. No way my identity is getting leaked. You guys should test your survival rate before leaving the planet too! 👽`;
-        else if (score === 4) shareBody = `🥈 [SURVIVAL CRISIS] So close! K-Patch 99% complete. I almost got caught being an alien because of one tiny slip-up;; My colleagues, did you survive safely?`;
-        else if (score === 3) shareBody = `⚠️ [RISK OF DISCOVERY] Omfg, I almost got caught being an alien because I had no 'Nunchi';; Honestly, this is unfair. Try it yourselves and leave a comment if you get the same result!`;
-        else if (score === 2 || score === 1) shareBody = `📚 [MISSION FAILED] Surving as a K-Worker is ridiculously hardㅠ Looking for fellow comrade to join a 'Nunchi-sharpening' study group (1/n)`;
-        else shareBody = `🌱 [HOPELESS TORTURE(?)] My exile period got extended because I know zero about Korean culture.. lol. I want to go back to HQㅠㅠ Fellow exiles, help me out! Can you guys even solve this?`;
-        const fullMessage = `[K-Office Survival Report 🇰🇷]\nTarget Status: ${currentRankText}\nSync Rate: ${score} / 5\n\n${shareBody}\n\nCheck my survival rate: ${gameUrl}`;
+        const t = translations[currentLang];
+        if (currentLang === 'en') {
+            if (score === 5) shareBody = `🏆 [SURVIVAL COMPLETE] I'm fully patched into K-Worker mode lol. No way my identity is getting leaked. You guys should test your survival rate before leaving the planet too! 👽`;
+            else if (score === 4) shareBody = `🥈 [SURVIVAL CRISIS] So close! K-Patch 99% complete. I almost got caught being an alien because of one tiny slip-up;; My colleagues, did you survive safely?`;
+            else if (score === 3) shareBody = `⚠️ [RISK OF DISCOVERY] Omfg, I almost got caught being an alien because I had no 'Nunchi';; Honestly, this is unfair. Try it yourselves and leave a comment if you get the same result!`;
+            else if (score === 2 || score === 1) shareBody = `📚 [MISSION FAILED] Surving as a K-Worker is ridiculously hardㅠ Looking for fellow comrade to join a 'Nunchi-sharpening' study group (1/n)`;
+            else shareBody = `🌱 [HOPELESS TORTURE(?)] My exile period got extended because I know zero about Korean culture.. lol. I want to go back to HQㅠㅠ Fellow exiles, help me out! Can you guys even solve this?`;
+        } else {
+            if (score === 5) shareBody = `🏆 [تمت المزامنة بنجاح] أنا دلوقتي كوري أصلي 100%! قدرت أتقن كل القواعد الكورية الصعبة. مستحيل حد يكتشف إني فضائي! جرب وشوف هتقدر تعيش زيهم ولا لأ؟ 👽`;
+            else if (score === 4) shareBody = `🥈 [في خطر كشف الهوية] كنت قريب جداً! مزامنة 99%، بس غلطة واحدة بسيطة كانت هتكشفني. يا زمايلي الفضائيين، حد فيكم قدر ينجو بسلام؟`;
+            else if (score === 3) shareBody = `⚠️ [رادار النونتشي اشتغل] يا نهار أبيض! كنت هنكشف عشان مكنش عندي 'نونتشي' كافي.. بصراحة الاختبار ده صعب! جربوه وقولولي نتيجتكم إيه؟`;
+            else if (score === 2 || score === 1) shareBody = `📚 [فشل المهمة] الحياة في المكتب الكوري أصعب مما كنت أتخيل.. محتاج أدرس 'النونتشي' أكتر بكتير. حد ييجي يذاكر معايا؟`;
+            else shareBody = `🌱 [تمديد فترة التدريب] فشلت تماماً في فهم الثقافة الكورية.. شكلي هفضل هنا كتير لغاية ما أتعلم. يا ريتني كنت ذاكرت كويس! حد يقدر يحل الاختبار ده صح؟`;
+        }
+        const fullMessage = (currentLang === 'en' ? `[K-Office Survival Report 🇰🇷]\nTarget Status: ${currentRankText}\nSync Rate: ${score} / 5\n\n${shareBody}\n\nCheck my survival rate: ${gameUrl}` : `[تقرير النجاة في كوريا 🇰🇷]\nالحالة: ${currentRankText}\nمعدل المزامنة: ${score} / 5\n\n${shareBody}\n\nشوف نتيجتك هنا: ${gameUrl}`);
         const textArea = document.createElement("textarea");
-        textArea.value = fullMessage;
-        document.body.appendChild(textArea);
-        textArea.select();
-        try { document.execCommand('copy'); showToast('Result copied!'); } catch (err) { console.error('Copy failed', err); }
+        textArea.value = fullMessage; document.body.appendChild(textArea); textArea.select();
+        try { document.execCommand('copy'); showToast(t.toast_copy); } catch (err) {}
         document.body.removeChild(textArea);
     }
 
     function showToast(msg) {
         const toast = document.getElementById('toast');
-        toast.innerText = msg;
-        toast.classList.remove('hidden');
+        toast.innerText = msg; toast.classList.remove('hidden');
         setTimeout(() => toast.classList.add('hidden'), 2000);
     }
 
     function closeModal() { document.getElementById('capture-modal').classList.add('hidden'); }
 
-    /**
-     * 모바일 캡처 겹침 방지 최적화 함수
-     * 메커니즘: 화면에 보이지 않는 오프스크린 노드에서 
-     * transform(scale)이 제거된 원본 크기 상태로 캡처를 수행함.
-     */
     async function saveAsImage() {
         const area = document.getElementById('capture-area');
-        const saveBtn = document.querySelector('.save-btn');
-        const originalBtnText = saveBtn.innerText;
-        
-        saveBtn.innerText = "GENERATING...";
+        const saveBtn = document.getElementById('btn-save-img');
+        const t = translations[currentLang];
         saveBtn.disabled = true;
-
-        // 폰트 및 이미지 로드 대기
         await document.fonts.ready;
-        
-        // 캡처를 위한 오프스크린 컨테이너 생성
-        const offscreenContainer = document.createElement('div');
-        offscreenContainer.style.position = 'absolute';
-        offscreenContainer.style.left = '-9999px';
-        offscreenContainer.style.top = '0';
-        offscreenContainer.style.width = '500px'; // 고정 폭 (데스크톱 기준)
-        offscreenContainer.style.backgroundColor = '#050505';
-        document.body.appendChild(offscreenContainer);
-
-        // 캡처할 영역 복제 및 오프스크린 배치
+        const off = document.createElement('div');
+        off.style.position = 'absolute'; off.style.left = '-9999px'; off.style.width = '500px'; off.style.backgroundColor = '#050505';
+        document.body.appendChild(off);
         const clone = area.cloneNode(true);
-        clone.style.transform = 'none'; // 스케일링 제거
-        clone.style.width = '500px';    // 고정 폭 강제
-        clone.style.position = 'relative';
-        offscreenContainer.appendChild(clone);
-
-        // 이미지 로딩 보장 (복제본 내 이미지)
-        const images = clone.getElementsByTagName('img');
-        const imgPromises = Array.from(images).map(img => {
-            if (img.complete) return Promise.resolve();
-            return new Promise(res => { img.onload = res; img.onerror = res; });
-        });
-        await Promise.all(imgPromises);
-
+        clone.style.transform = 'none'; clone.style.width = '500px';
+        if (currentLang === 'ar') { clone.style.direction = 'rtl'; clone.style.fontFamily = 'Noto Sans Arabic, sans-serif'; }
+        off.appendChild(clone);
         try {
-            // 오프스크린 노드를 직접 캡처
-            const canvas = await html2canvas(clone, {
-                useCORS: true,
-                scale: 2, // 고해상도
-                backgroundColor: "#050505",
-                width: 500,
-                height: clone.offsetHeight,
-                logging: false,
-                onclone: (clonedDoc) => {
-                    // 복제본의 모든 텍스트 정렬 및 레이아웃 강제 교정
-                    const clonedArea = clonedDoc.querySelector('#capture-area');
-                    if (clonedArea) {
-                        clonedArea.style.display = 'flex';
-                        clonedArea.style.flexDirection = 'column';
-                        clonedArea.style.padding = '20px';
-                    }
-                }
-            });
-
+            const canvas = await html2canvas(clone, { useCORS: true, scale: 2, backgroundColor: "#050505", width: 500 });
             canvas.toBlob((blob) => {
-                const imgUrl = URL.createObjectURL(blob);
-                const modalImg = document.getElementById('modal-img');
-                const downloadBtn = document.getElementById('download-trigger');
-                
-                modalImg.src = imgUrl;
+                const url = URL.createObjectURL(blob);
+                document.getElementById('modal-img').src = url;
                 document.getElementById('capture-modal').classList.remove('hidden');
-                
-                downloadBtn.onclick = () => {
-                    const link = document.createElement('a');
-                    link.href = imgUrl; 
-                    link.download = `K-Survival-Report-${score}.png`; 
-                    link.click();
+                document.getElementById('download-trigger').onclick = () => {
+                    const l = document.createElement('a'); l.href = url; l.download = `K-Survival-${score}.png`; l.click();
                 };
-                
-                // 정리
-                document.body.removeChild(offscreenContainer);
-                saveBtn.innerText = originalBtnText;
+                document.body.removeChild(off);
                 saveBtn.disabled = false;
             }, 'image/png');
-            
-        } catch (error) {
-            console.error("Capture failed:", error);
-            document.body.removeChild(offscreenContainer);
-            saveBtn.innerText = originalBtnText;
-            saveBtn.disabled = false;
-        }
+        } catch (e) { document.body.removeChild(off); saveBtn.disabled = false; }
     }
 </script>
 </body>
